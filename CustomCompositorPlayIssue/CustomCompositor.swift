@@ -28,14 +28,18 @@ class CustomCompositor: NSObject, AVVideoCompositing {
       autoreleasepool {
         let sourcePixelBuffer = request.sourceFrame(byTrackID: request.sourceTrackIDs[0].int32Value)!
         if let instruction = request.videoCompositionInstruction as? CustomInstruction {
-          let compositingTime = request.compositionTime
+
+          // Create CIImage and apply correct orientation
           var inputImage = CIImage(cvPixelBuffer: sourcePixelBuffer)
             .transformed(by: instruction.orientationTransform)
           inputImage = inputImage
             .transformed(by: .init(translationX: -inputImage.extent.minX, y: -inputImage.extent.minY))
 
+          //apply transform block
+          let compositingTime = request.compositionTime
           let transformedImage = instruction.transform(inputImage, compositingTime)
 
+          //render and return result
           let newPixelBuffer = request.renderContext.newPixelBuffer()!
           self.context.render(transformedImage, to: newPixelBuffer)
           request.finish(withComposedVideoFrame: newPixelBuffer)

@@ -26,7 +26,7 @@ class AVFoundationStack: NSObject {
       transform: { input, _ in input }
     )
 
-    composition.instructions = [instruction]
+    composition.instructions = [instruction] // commenting this line "fixes" the issue, but functionality is also lost
 
     let playerItem = AVPlayerItem(asset: asset)
     playerItem.videoComposition = composition
@@ -34,6 +34,7 @@ class AVFoundationStack: NSObject {
 
     super.init()
 
+    // despite playing issue, this value is still true
     let isValid = composition.isValid(for: asset, timeRange: videoTrack.timeRange, validationDelegate: self)
     print("isValid: \(isValid)")
   }
